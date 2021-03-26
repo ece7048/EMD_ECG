@@ -1,0 +1,7 @@
+test_v_1.1: A test regarding the EMD approach, with linear interpolation in all indervals 
+
+test_v_1.2: A test regarding the EMD approach, with polionimic interpolation in all indervals 
+
+test_v_1.3: A test regarding the EMD approach, with b-splins interpolation in all indervals 
+
+

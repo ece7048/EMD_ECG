@@ -1,0 +1,45 @@
+1) TEO
+twra
+ama 8es na kaneis kapoia allagh sto xeri
+boreis na thn kaneis
+alla den xreiazetai
+apla gia na katalaveis ti paizei me to arxeio pou sou ftiaxnei
+boreis na to anoikseis me emacs kai na deis ti akrivws kanei generate
+trekse to glade
+kai anoikse to builder.ui na deis
+epishs
+ama 8es na anoiksei ena tetoio arxeio me emacs
+gia na deis ti grafei mesa h gia na to kaneis edit
+pata
+Alt-X xml-mode
+gia na exei sosto highlighting klp
+giati epeidh to arxeio teleiwnei se .ui ή .glade
+
+
+export PKG_CONFIG_PATH="$HOME/.guix-profile/lib/pkgconfig:$HOME/.guix-profile/share/pkgconfig${PKG_CONFIG_PATH:+:}$PKG_CONFIG_PATH"
+
+export GUIX_GTK3_PATH="$HOME/.guix-profile/lib/gtk-3.0${GUIX_GTK3_PATH:+:}$GUIX_GTK3_PATH"
+
+(install libxml2.0 sto guix-package)
+
+2) TEO
+boreis na to ensomatwseis
+(gtk-container-add gnuplot-window gnuplot-socket)
+    (gtk-widget-show gnuplot-window)
+    (set! gnuplot (make-gnuplot (list (format #f "set terminal x11 window \"~x\"~%~!" (gtk-socket-get-id gnuplot-socket)))))
+    (set-active plot-channel-widget 1)
+
+etsi to kanw apo scheme
+me container socket sto gtk
+
+(define gnuplot-window (get-widget glade-xml "gnuplot-window"))
+(define gnuplot-socket (gtk-socket-new))
+(define ads-cmd (make-variable '()))
+(define gnuplot '())
+(define plot-channel-widget (get-widget glade-xml "plot-channel"))
+kai afta ta define prin
+
+
+psaksto ligo me sockets kai containers
+logika apo to glade ftiaxneis to container
+kai to socket apo C

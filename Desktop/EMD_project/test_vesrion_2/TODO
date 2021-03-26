@@ -1,0 +1,4 @@
+//TODO_space
+//(1) verify the EMD process of linear interpolation (folder:test v_2, file: test_v_1.1)
+//(2) verify the EMD process of polinomic interpolation  (folder:test_v_2, file:test_v_1.2)
+//(3) verify the EMD process of splines interpolation (folder:test_v_2, file:test_v_1.3)

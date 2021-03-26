@@ -1,0 +1,225 @@
+@startuml
+package extrema_detect <<Node>> {
+class extrema_detect {
+	+extrema_detect(T signal[],T time[])
++~extrema_detect()
++extrema_detect(T xin[],T time[])
++std::vector<T> get(EXTREMA_KIND E)
++void set(EXTREMA_KIND E, T extrema_data[], int size_extrema)
++int test_point(std::vector<T> extrema)
+__   
+#inline T forward_differentiation(T x[POINTS_OF_EVAL], T t[POINTS_OF_EVAL])
+__
+-vector<T> minimum
+-vector<T> maximum
+-vector<T> minimum_time
+-vector<T> maximum_time
+}
+}
+
+
+package main <<Node>> {
+class main_handler {
+	+run()
+        + <T> get_SD()
+__   
+#
+__
+- T c_SD
+__
+- compute_SD(); 
+- set_SD(T SD)
+}
+}
+
+
+
+package components <<Node>> {
+class compute_components {
+        + compute_components(std::list::vector<T> b_spline std::vector <T> Xo_signal)
+        + ~compute_components()
+	+ std::vector<T> get_h_comp()
+__
+- std::vector<T> c_mean_value
+- std::vector<T> c_h_comp
+- std::vector<T> c_Xo_signal
+- std::list::vector<T> c_b_spline
+
+__   
+- std::vector<T> get_mean_value()
+- set_h_comp(std::vector<T> h_comp)
+- set_mean_value(std::vector<T> mean_value)
+- compute_mean_value()
+- compute_h_comp()
+}
+
+}
+
+
+package IMF <<Database>> {
+class store_IMF {
++store_IMF(std::vector<T> IMF) 
++store_IMF()
++~store_IMF()
++inline T get_IMF_list(int list_size)
++inline T get_obj_IMF()
++void set_obj_IMF(std::shared< store_IMF<T> > IMF_p <store_IMF<T>)
+__
+-std::list< std::vector<T> > IMF_list;
+-std::shared< store_IMF<T> > c_IMF_p <store_IMF<T>;
+
+}
+}
+
+package h[i](t) <<Database>> {
+class store_h {
+	+store_h_comp(std::vector<T> h_k)
+        +store_h_comp()
+	+~store_h_comp()
+	+ set_h(std::vector<T> h)
+	+ std::vector<T> get_stored_h()
+	+ set_SD(T SD)
+	+ T get_SD()
+__   
+- linked list <vector> h_list
+-std::vector<T> c_h_k_1
+-std::vector<T> c_h_k
+-T c_SD
+__
+- compute_SD()
+
+}
+}
+
+package internal_loop_IMF(t) <<Node>> {
+class IMF_compute {
++IMF_compute(std::vector<T> signal, std::vector<T> time)
++IMF_compute()
++~IMF_compute()
++void run()
++inline std::vector<T> get_IMF()
++inline void set(std::vector<T> signal, std::vector<T> time)
+__     
+-std::vector<T> c_T
+-std::vector<T> c_X
+-std::vector<T> IMF
+-T c_SD;
+}
+}
+
+
+
+
+package Residual <<Node>> {
+class Compute_residue {
+        +Compute_residue(std::vectror <T> IMF, std::vector<T> X_signal)
+ 	+~Compute_residue()
+      +std::vector<T> get_residual()
+__
+#
+__
+-c_residual
+-c_X_signal
+-c_IMF
+
+}
+}
+
+package BW_method <<Node>> {
+class Filter_BW {
+	+ Filter_BW(std::vector<T> X_signal,std::shared<IMF<T>> IMF_p2 <IMF>)
+        +~Filter_BW()	
++std::vector<T> get_signal()
+__
+-std::vector<T> c_X_signal
+-std::vector<T> filter_signal
+-std::list::vector<T> c_IMF
+__
+-compute_filter_signal()
+}
+}
+
+
+
+package B_spline  <<Node>> {
+class Coeff_solver{
+public: B_spline<T>
++Coeff_solver()
++void run(B_spline<T> &)
++~Coeff_solver()
++inline std::vector<T> get()
++void set_acoeff(std::vector<T> t_a_coeff)
+__
+-std::vector<T> a_coeff;
+-unsigned int c_dim;
+-unsigned int c_h;
+-T L[N_sample][N_sample]
+-T U[N_sample][N_sample]
+-T A[N_sample][N_sample]
+-T B[N_sample]
+__
+-void solver_UX(T Y[])
+-void compute_LU()
+-void solver_LY()
+-void store(T matrix[][N_sample], MATRIX_KIND M)
+-T get_matrix(MATRIX_KIND M)
+}
+
+
+class Cubic_B_comp{
+public: B_spline<T>
++Cubic_B_comp()
++~Cubic_B_comp()
++void B_determine(B_spline<T> &)
++inline std::vector<T> get()
++void set_B_kcoeff(std::vector<T> t_B_k_coeff)
+__
+-T B_array[4*N_sample]
+-std::vector<T>  B_k_coeff
+}
+
+
+
+class B_spline{
++B_spline()
++~B_spline()
++B_spline(std::vector<T> t_extrema, std::vector<T> t_extrema_time,std::vector<T> t_time)
++std::vector<T> get(STORE_KIND SK);
++std::vector<T> get_extrema()
++std::vector<T> get_extrema_time()
++std::vector<T> get_time()
++T get_h()
++void set_h(T b_h)
++void set_extrema(std::vector<T> t_extrema)
++void set_extrema_time(std::vector<T> t_extrema_time)
++void set_time(std::vector<T> t_time_inter)
+__
+#std::vector<T> extrema
+#std::vector<T> extrema_time
+#std::vector<T> time_inter
+#T h
+__
+-std::vector<T> interp_data
+-T S_extrema[N_sample]
+-T B_time[N_sample]
+-T timestep[N_sample]
+-T time[N_sample] 
+}
+}
+
+
+
+
+Cubic_B_comp<|-- B_spline 
+Coeff_solver<|-- B_spline 
+main -> IMF_compute
+IMF_compute ->extrema_detect
+IMF_compute -> B_spline
+main -> Compute_residue
+Compute_residue ->extrema_detect
+main -> store_IMF
+IMF_compute -> store_h
+main -> Filter_BW
+Filter_BW-> store_IMF
+IMF_compute -> compute_components
+@enduml

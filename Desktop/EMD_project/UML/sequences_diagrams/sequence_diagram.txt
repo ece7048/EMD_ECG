@@ -1,0 +1,146 @@
+@startuml
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 20
+skinparam maxmessagesize 60
+skinparam sequenceParticipant underline
+
+actor MCU
+control "main" as M
+participant "Extrema Detect" as A
+participant "Interpolation Extrema" as B
+participant "Compute components" as C
+database "store h[i]_comp_SD" as D
+database "store IMF" as E
+participant "Compute residue" as F
+control "Filter_BW" as G
+actor "Mobile" as H
+
+MCU -> M: Pass ECG_DATA X(t)
+activate M
+note right: initialize: int i=0;  X[0](t)=X(t);
+M -> A: set_ecg_signal X[0](t)
+activate A
+A->A:compute_extrema e[0](t)
+A-> M:return_e[0](t)
+deactivate A
+
+alt e[0](t).size <=2 succesful
+
+M->MCU: <font color=red><b>ERROR: NO ECG  
+
+
+else  e[0](t).size <=2 failure GO external_loop
+
+group external_loop
+
+loop (int i) while e[i](t).size >=2 succesful
+
+
+
+M -> A: set_ecg_signal X[i](t)
+
+note right:if (i >= 1) {X[i](t)=r[i](t);} else{ X[i](t)=X(t);}
+activate A
+A->A:compute_extrema e[i](t)
+A-> M:return_e[i](t)
+deactivate A
+
+M-> B: set_e[i](t)
+activate B
+B->B: interpolate b_splines b_s[i](t) 
+B->M:return b_s[i](t)
+deactivate B
+M-> C: set_b_s[i](t)
+activate C
+C->C:Compute mean values m[i](t)
+C->C: compute components h[i](t)=X[i](t)-m[i](t)
+C -> M: Done_return_h[i](t),
+note right: initialize: int o=0;  X[o](t)=h[i][t]; 
+deactivate C
+M->D:store h[i][t]
+activate D
+note right: only 2 h[k-1] and h[k] stored
+D->D:compute SD[h[i][t]] check
+note right: SD[h[o]]=SD[h[i]];
+D->M:return if SD(h[o])>=0.3 succesful/failed
+
+alt SD(h[o])>=0.3 succesful GO internal_loop
+group internal_loop
+ loop (int o) while SD[h[o]]>0.3 successful
+	
+	M -> A: set_ecg_signal X[o](t)
+activate A
+note right: if (o>=1){X[o](t)=h[o](t)} else {X[o](t)=h[i](t)}
+A->A:compute_extrema e[o](t)
+A-> M:return_e[o](t)
+deactivate A
+
+	M-> B: set_e[o](t)
+	activate B
+	B->B: interpolate b_splines b_s[o](t)
+	B->M
+	deactivate B
+	M-> C: set_b_s[o](t)
+activate C
+	C->C:Compute mean values m[o](t)
+
+	C->C:compute components ho(t)=Xo(t)-mo(t)
+	C -> M: Done_return_h[o](t))
+note right: set h[i](t)=h[o](t)
+	deactivate C
+	M->M:update SD[h[i][t]] check
+	note right: SD[h[o]]=SD[h[i]];
+
+
+end
+end
+deactivate D
+else SD(h[o])>=0.3 failure
+
+M-> E: Store_IMF(h[i])
+activate E
+note right: create share pointer Object
+E-> M:Stored
+
+M-> F:set_IMF(h[i])_data 
+activate F
+F->F:compute residual r[i](t)
+note right: set X[i](t)=r[i](t)
+F->M:return_r[i](t)
+
+deactivate F
+
+
+end
+end
+end
+
+
+M->G: ACTIVATE Filter_BW
+activate G
+M->G:set X(t) ECG noise signal
+G->E:request N last IMF vectors
+alt n>=N succesful
+E->G:return N last IMF
+
+else failure
+E->G:<font color=red><b>ERROR: NO IMF DATA
+deactivate E
+end
+G->G: decide the recostruction of X(t)
+
+G->H: return ECG without BW
+activate H
+G->M
+deactivate G
+
+M->MCU: <font color=blue><b>FINISH
+deactivate M
+end
+
+
+
+
+
+@enduml
+

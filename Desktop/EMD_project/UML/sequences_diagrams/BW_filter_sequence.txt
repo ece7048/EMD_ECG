@@ -1,0 +1,53 @@
+@startuml
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 20
+skinparam maxmessagesize 60
+skinparam sequenceParticipant underline
+
+
+actor "main" as M
+participant "initializer" as I
+participant "sinc_low_pass_impulse" as S
+participant "Compute_b_i" as B
+participant "Compute variance" as C
+participant "Compute_sum_b_i" as MN
+control "Test_var_boundaries" as T
+
+
+
+activate M
+M -> I: Initialize_input
+activate I
+
+
+group b_compute_loop
+
+loop while var(b_Q+1)>j and var(bQ)<j successful
+
+I->B:compute b 
+activate B
+B->S: determine the h_i response low pass filter
+activate S
+S->B: h_i
+deactivate S
+B->B: convolution of h_i with initial signal 
+B->MN:compute sum_b_i
+activate MN
+MN->B:store sum_b_i_private
+deactivate MN
+B->C: compute variance
+activate C
+C->B:variance_return
+deactivate C
+B->T:test while loop condition
+activate T
+T->B:failed
+note right: return again in cumpote
+T->B:success 
+note right: end
+deactivate T
+end
+deactivate B
+deactivate M
+
+@enduml

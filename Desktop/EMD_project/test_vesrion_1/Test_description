@@ -1,0 +1,13 @@
+test_v_0.1: An initial test regarding the b-spline interpolation in only one time inderval
+
+test_v_0.2: An initial test regarding the b-spline/linear interpolation in eight time indervals
+
+test_v_0.3: A test regarding the IMF internal loop approach, with linear interpolation in all indervals 
+
+test_v_0.4: A test regarding the IMF internal loop approach, with polionimic interpolation in all indervals 
+
+test_v_0.5: A test regarding the IMF internal loop approach, with b-splines interpolation in all indervals 
+
+test_v_0.6: A test regarding the IMF internal loop approach, with linear interpolation see if take the initial signal if sum the IMF (tecnical signal with sinc)
+
+test_v_0.7: A test regarding the IMF internal loop approach, with linear interpolation see if work correct the BW filter  (tecnical signal with sinc)
